@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Voting Platform{% endblock %}
+
+{% block content %}
+<h1>Welcome, {{ session.username }}!</h1>
+
+{% if user.has_voted %}
+    <div class="alert alert-success">
+        <h4>Thank you for voting!</h4>
+        <p>You have already cast your vote. You can view the results below.</p>
+        <a href="{{ url_for('results') }}" class="btn btn-primary">View Results</a>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4>Ready to Vote?</h4>
+        <p>Choose your preferred candidate from the list below.</p>
+    </div>
+    
+    <h2>Select Your Candidate</h2>
+    <div class="row">
+        {% for candidate in candidates %}
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ candidate.name }}</h5>
+                        {% if candidate.party %}
+                            <h6 class="card-subtitle mb-2 text-muted">{{ candidate.party }}</h6>
+                        {% endif %}
+                        {% if candidate.description %}
+                            <p class="card-text">{{ candidate.description }}</p>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('vote', candidate_id=candidate.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-success" 
+                                    onclick="return confirm('Are you sure you want to vote for {{ candidate.name }}? This action cannot be undone.')">
+                                Vote for {{ candidate.name }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Results - Voting Platform{% endblock %}
+
+{% block content %}
+<h1>Voting Results</h1>
+
+{% if total_votes > 0 %}
+    <p class="lead">Total votes cast: {{ total_votes }}</p>
+    
+    <div class="row">
+        {% for candidate in candidates %}
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ candidate.name }}</h5>
+                        {% if candidate.party %}
+                            <h6 class="card-subtitle mb-2 text-muted">{{ candidate.party }}</h6>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary fs-6">{{ candidate.votes }} votes</span>
+                            <span class="text-muted">
+                                {{ "%.1f"|format((candidate.votes / total_votes * 100) if total_votes > 0 else 0) }}%
+                            </span>
+                        </div>
+                        
+                        <div class="progress mt-2">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {{ (candidate.votes / total_votes * 100) if total_votes > 0 else 0 }}%"
+                                 aria-valuenow="{{ candidate.votes }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="{{ total_votes }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h4>No votes yet!</h4>
+        <p>Be the first to cast your vote!</p>
+        {% if not session.user_id %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Vote</a>
+        {% elif not session.has_voted %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

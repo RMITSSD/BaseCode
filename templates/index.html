@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Welcome to the Voting Platform</h1>
+        <p class="lead">Exercise your democratic right and vote for your preferred candidate.</p>
+        
+        {% if not session.user_id %}
+            <div class="alert alert-warning">
+                <strong>Please login or register to vote!</strong>
+            </div>
+        {% endif %}
+        
+        <h2>Current Candidates</h2>
+        <div class="row">
+            {% for candidate in candidates %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ candidate.name }}</h5>
+                            {% if candidate.party %}
+                                <h6 class="card-subtitle mb-2 text-muted">{{ candidate.party }}</h6>
+                            {% endif %}
+                            {% if candidate.description %}
+                                <p class="card-text">{{ candidate.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                {% if session.user_id %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-block mb-2">Go to Dashboard</a>
+                    <a href="{{ url_for('results') }}" class="btn btn-secondary btn-block">View Results</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-block mb-2">Login to Vote</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-outline-primary btn-block">Register New Account</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - SECRET_KEY=your-secret-key-change-in-production
+      - DATABASE_URL=sqlite:////app/data/voting.db
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    volumes:
+      - ./data:/app/data
+      - ./instance:/app/instance
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=voting_db
+      - POSTGRES_USER=voting_user
+      - POSTGRES_PASSWORD=voting_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  web-postgres:
+    build: .
+    ports:
+      - "5001:5000"
+    environment:
+      - SECRET_KEY=your-secret-key-change-in-production
+      - DATABASE_URL=postgresql://voting_user:voting_password@db:5432/voting_db
+    depends_on:
+      - db
+    restart: unless-stopped
+    profiles:
+      - postgres
+
+volumes:
+  postgres_data:

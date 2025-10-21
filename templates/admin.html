@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Voting Platform{% endblock %}
+
+{% block content %}
+<h1>Admin Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Add New Candidate</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('add_candidate') }}">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Candidate Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="party" class="form-label">Party</label>
+                        <input type="text" class="form-control" id="party" name="party">
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Candidate</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>System Statistics</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Total Users:</strong> {{ users|length }}</p>
+                <p><strong>Total Candidates:</strong> {{ candidates|length }}</p>
+                <p><strong>Users Who Voted:</strong> {{ users|selectattr('has_voted')|list|length }}</p>
+                <p><strong>Total Votes Cast:</strong> {{ candidates|sum(attribute='votes') }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3>Current Candidates</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Party</th>
+                    <th>Votes</th>
+                    <th>Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for candidate in candidates %}
+                    <tr>
+                        <td>{{ candidate.id }}</td>
+                        <td>{{ candidate.name }}</td>
+                        <td>{{ candidate.party or 'Independent' }}</td>
+                        <td>{{ candidate.votes }}</td>
+                        <td>{{ candidate.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-4">
+    <h3>Registered Users</h3>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Has Voted</th>
+                    <th>Is Admin</th>
+                    <th>Registered</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% if user.has_voted %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-secondary">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_admin %}
+                                <span class="badge bg-primary">Admin</span>
+                            {% else %}
+                                <span class="badge bg-secondary">User</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
